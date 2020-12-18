@@ -1,12 +1,24 @@
 package com.onlineTest.app;
 
 /*Online Java Paper Test*/
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.sound.sampled.*;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 class Quizz extends JFrame implements ActionListener{
 	
@@ -32,7 +44,7 @@ class Quizz extends JFrame implements ActionListener{
 	static Timer timer = new Timer();
 	static int i = 300;
 	
-	Quizz(String s){
+	Quizz(String s)throws LineUnavailableException, UnsupportedAudioFileException, IOException{
 		super(s);
 		//panel.add(textChrono);
 		textChrono.setBounds(250,5,80,30); 
@@ -90,10 +102,24 @@ class Quizz extends JFrame implements ActionListener{
 		setVisible(true);
 		setSize(600,400);
 		
+		
+		
 	}
 	static TimerTask task = new TimerTask(){
 		public void run(){
-			String time = getTime(i);
+			String time = "0";
+			try {
+				time = getTime(i);
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			textChrono.setText(time);
 			i--;
 		}
@@ -101,18 +127,15 @@ class Quizz extends JFrame implements ActionListener{
 	public static void runTimer(){
 		
 			timer.schedule(task, 0, 1000 );	
-			
-			
+		
 	}
 	
 	
 
 
-	static String getTime(int sec)
+	static String getTime(int sec) throws LineUnavailableException, UnsupportedAudioFileException, IOException
 	{
 		
-		
-	    
 	    int minutes = 0;
 	    int seconds = 0;
 	    
@@ -120,13 +143,14 @@ class Quizz extends JFrame implements ActionListener{
 	    String strMins; 
 	    String strSecs;
 
-	    if(i==30) {
+	    if(i==295) {
 	    	
 	    		label1.setText("Attention il te reste 30 sec");
 	    }
-	    if(i== 0) {
+	    if(i==0) {
 	    	b1.setEnabled(false);
 	    	v1.setEnabled(false);
+	    	playSound("http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/alien_hit.wav");
 	    	//System.exit(0);	
 	    }
 	   if (sec >= 60){
@@ -161,14 +185,10 @@ class Quizz extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		if(e.getSource()==b1){
 			current++;
-			//vider();
 			set();
-			
-			//v1.setEnabled(false);
 			if(current==4){
 				b1.setEnabled(false);
 			}
-
 		}
 		if(count >= 40) {
 			if(e.getSource() == v1) {
@@ -204,6 +224,15 @@ class Quizz extends JFrame implements ActionListener{
 		
 		
 	}
+	static void playSound(String soundName) throws LineUnavailableException, UnsupportedAudioFileException, IOException
+    {
+       URL url = new URL(soundName);
+           Clip clip = AudioSystem.getClip();
+           AudioInputStream ais = AudioSystem.getAudioInputStream( url );
+           clip.open(ais);
+           clip.loop(Clip.LOOP_CONTINUOUSLY);
+          
+    }
 	
 	void set(){
 
@@ -226,16 +255,17 @@ class Quizz extends JFrame implements ActionListener{
 		
 		if(current==3){
 			l.setText("<html>Que4:<br> Est-ce que on peut avoir plusieurs constructeurs pour la même classe </html>");
-			jb[0].setText("oui");jb[1].setText("non");jb[2].setText(" ");
+			jb[0].setText("oui");jb[1].setText("non");jb[2].setVisible(false);
 		}
 		
 		if(current==4){
 			l.setText("Que5:<br> Dans la ligne public class A implements B\", B est");
-			jb[0].setText("oui");jb[1].setText("non");jb[2].setText(" ");	
+			jb[0].setText("oui");jb[1].setText("non");	
 		}
 	
 
 		if(current==5){
+			jb[2].setVisible(true);
 			l.setText("<html>Que6:<br> Après la compilation, un programme écrit en <br>"
 					+ "            JAVA, il se transforme en programme en bytecode<br>"
 					+ "            Quelle est l’extension du programme en<br>"
@@ -244,6 +274,7 @@ class Quizz extends JFrame implements ActionListener{
 			jb[0].setText("aucun des choix");jb[1].setText(".JAVA");jb[2].setText(".Class");	
 		}
 		if(current==6){
+			jb[2].setVisible(true);
 			l.setText("<html>Que7:<br> Class Test{Public Test () {"
 					+ "System.out.println(”Bonjour”);}<br>"
 					+ "public Test (int i) {<br>"
@@ -257,37 +288,44 @@ class Quizz extends JFrame implements ActionListener{
 	
 		if(current==7){
 			l.setText("<html>Que8:<br> Voici un constructeur de la classe Employee, y-at'il un problème Public void Employe(String n) Nom=n</html>");
-			jb[0].setText("vrai");jb[1].setText("faux");
+			jb[0].setText("vrai");jb[1].setText("faux");jb[2].setVisible(false);
 		}
 		if(current==8){
+			jb[2].setVisible(true);
 			l.setText("<html>Que9:<br> Pour spécifier que la variable ne pourra plus être modifiée et doit être initialisée dès sa déclaration,on la déclare comme une constante avec le mot réservé</html>");
 			jb[0].setText("aucun des choix");jb[1].setText("final");jb[2].setText(" const");
 		}
 		
 		if(current==9){
+			jb[2].setVisible(false);
 			l.setText("<html>Que10:<br> Dans la ligne \"public class A implements B\", B est</html>");
-			jb[0].setText("oui");jb[1].setText("non");jb[2].setText(" ");	
+			jb[0].setText("oui");jb[1].setText("non");	
 		}
 		if(current==10){
+			jb[2].setVisible(true);
 			l.setText("<html>Que11:<br> Dans une classe, on accède à ses variables grâce au mot clé</html>");
 			jb[0].setText("aucun choix");jb[1].setText("super");jb[2].setText("const");	
 		}
 		if(current==11){
+			jb[2].setVisible(true);
 			l.setText("<html>Que12:<br> Toutes les classes héritent de la classe</html>");
 			jb[0].setText("Main");jb[1].setText("Object");jb[2].setText("AWT");
 		}
 	
 		if(current==12){
+			jb[2].setVisible(true);
 			l.setText("<html>Que13:<br> Par convention une classe</html>");
 			jb[0].setText("est en minuscule");jb[1].setText("commence par une majuscule");
 			jb[2].setText("est en majuscules");
 		}
 		if(current==13){
+			jb[2].setVisible(true);
 			l.setText("<html>Que14:<br> calculerSalaire(int)<br> calculerSalaire(int, double)<br> La méthode calculerSalaire est : </html>");
 			jb[0].setText("aucun des choix");jb[1].setText("surchargée");jb[2].setText("redéfinie");
 		}
 		
 		if(current==14){
+			jb[2].setVisible(false);
 			l.setText("<html>Que15:<br> Une classe qui contient au moins une méthode abstraite doit être déclarée abstraite.</html>");
 			jb[0].setText("vrai");jb[1].setText("faux");
 			
@@ -305,9 +343,10 @@ class Quizz extends JFrame implements ActionListener{
 		jb[2].setSelected(false);
 	}
 
-	public static void main(String s[]){
-		runTimer();	
+	public static void main(String s[])throws LineUnavailableException, UnsupportedAudioFileException, IOException{
+			
 		new Quizz("Online Test Of Java");
+		runTimer();
 		
 		
 	}
